@@ -16,7 +16,7 @@ Both mounting paths can coexist safely: the self-mount checks whether the target
 
 ## Installation
 
-1. Download `Twemoji-Resurrection-<version>-ksu.zip` from [Releases](https://github.com/deserthouse/Twemoji-Resurrection/releases).
+1. Download `Twemoji-Resurrection-<version>-ksu.zip` from [Releases](https://github.com/deserthouse/twemoji-resurrection/releases).
 2. Flash it from your root manager's module page.
 3. Reboot.
 
