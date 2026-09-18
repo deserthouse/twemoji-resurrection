@@ -2,7 +2,7 @@
 
 # Twemoji Resurrection
 
-**Systemless Twemoji (Twitter emoji) replacement for Android — works with every root manager**
+**Systemless Twemoji (Twitter emoji) replacement for Android — Magisk / KernelSU / APatch**
 
 Resurrecting and maintaining the abandoned Twemoji system font replacement — currently Twemoji 17.0.3 (Emoji 17.0 / Unicode 17.0)
 
@@ -26,8 +26,8 @@ Resurrecting and maintaining the abandoned Twemoji system font replacement — c
 | Root manager | Mounting |
 |---|---|
 | Magisk | Native Magic Mount |
-| KernelSU / SukiSU / APatch (bare, no mount metamodule) | `post-fs-data.sh` **self-mounts** via per-slot bind-mounts |
-| KernelSU / SukiSU with a Magic Mount / OverlayFS metamodule | Metamodule mounts; the self-mount is a verified no-op |
+| KernelSU / APatch (bare, no mount metamodule) | `post-fs-data.sh` **self-mounts** via per-slot bind-mounts |
+| KernelSU with a Magic Mount / OverlayFS metamodule | Metamodule mounts; the self-mount is a verified no-op |
 
 Both mounting paths can coexist safely: before mounting, the self-mount checks whether the target slot already serves Twemoji and leaves it alone if so.
 
@@ -43,9 +43,9 @@ The denominator only counts slots that exist on the device — declared-but-abse
 
 ### More
 
-- 🖼️ **WebUI emoji gallery** — tap **Open** on the module in KernelSU / SukiSU / APatch (or Magisk with WebUIX) to browse all emoji by category; the gallery is rendered by the *current system emoji font*, so it doubles as a live verification that the replacement took effect
+- 🖼️ **WebUI emoji gallery** — tap **Open** on the module in KernelSU / APatch (or Magisk with WebUIX) to browse all emoji by category; the gallery is rendered by the *current system emoji font*, so it doubles as a live verification that the replacement took effect
 - 🔬 **WebUI live self-check** — re-runs the boot-time verification on demand through the manager's root shell bridge, showing one row per slot (serving Twemoji / still the stock font / not present) with a progress bar; falls back gracefully to the boot-time description without a bridge
-- 🔄 **In-app update check** — ships an `updateJson`, so KernelSU, SukiSU, APatch and Magisk managers offer new versions directly from the module list
+- 🔄 **In-app update check** — ships an `updateJson`, so KernelSU, APatch and Magisk managers offer new versions directly from the module list
 
 ## 📸 Screenshots
 
@@ -60,7 +60,7 @@ The denominator only counts slots that exist on the device — declared-but-abse
 
 ### Requirements
 
-- Any root solution: Magisk / KernelSU / SukiSU / APatch
+- Any root solution: Magisk / KernelSU / APatch
 
 ### Steps
 
@@ -94,10 +94,10 @@ The version tracks upstream Twemoji (17.0.3); the number in parentheses is the m
 
 | Item | Status |
 |---|---|
-| Root managers | Magisk / KernelSU / SukiSU / APatch (see the mounting matrix) |
+| Root managers | Magisk / KernelSU / APatch (see the mounting matrix) |
 | Android versions | No hard minimum; Android 15+ automatically parses `font_fallback.xml` instead |
 | OEM ROMs | The parser tolerates OEM `fonts.xml` variants (multi-language `lang` attributes, extra font attributes) |
-| Verified | End-to-end on an AOSP emulator (API 36); ✅ on a SukiSU real device |
+| Verified | End-to-end on an AOSP emulator (API 36); ✅ on a KernelSU-family real device |
 
 ## 🛠️ How it works
 
@@ -110,7 +110,7 @@ Boot · post-fs-data stage
   │
   ├─ Make every slot serve the Twemoji font (CBDT/CBLC build of NotoColorEmoji.ttf)
   │     ├─ Magisk ──────────────▶ Magic Mount overlay already in place (per-slot symlinks created at install)
-  │     └─ KSU / SukiSU / APatch ─▶ post-fs-data.sh self-mounts each slot via bind-mount
+  │     └─ KSU / APatch ─▶ post-fs-data.sh self-mounts each slot via bind-mount
   │                                   └─ cmp -s guard: no-op if the slot already serves Twemoji (safe coexistence)
   │
   └─ Verify what each slot actually serves → rewrite the module description

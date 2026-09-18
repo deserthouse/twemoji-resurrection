@@ -2,7 +2,7 @@
 
 # Twemoji Resurrection
 
-**Android 系统 Twemoji（Twitter 表情）替换模块 —— systemless、全管理器兼容**
+**Android 系统 Twemoji（Twitter 表情）替换模块 —— systemless，兼容 Magisk / KernelSU / APatch**
 
 复活并延续停更的 Twemoji 系统字体替换 —— 当前 Twemoji 17.0.3（Emoji 17.0 / Unicode 17.0）
 
@@ -26,8 +26,8 @@
 | Root 管理器 | 挂载方式 |
 |---|---|
 | Magisk | 原生 Magic Mount |
-| KernelSU / SukiSU / APatch（无挂载 metamodule） | `post-fs-data.sh` **自挂载**（逐槽 bind-mount） |
-| KernelSU / SukiSU + Magic Mount / OverlayFS metamodule | metamodule 挂载；自挂载经守卫验证为 no-op |
+| KernelSU / APatch（无挂载 metamodule） | `post-fs-data.sh` **自挂载**（逐槽 bind-mount） |
+| KernelSU + Magic Mount / OverlayFS metamodule | metamodule 挂载；自挂载经守卫验证为 no-op |
 
 两条挂载路径可以安全共存：自挂载前会先确认目标槽当前服务的字体，已经是 Twemoji 就不再动手。
 
@@ -43,9 +43,9 @@
 
 ### 其他特性
 
-- 🖼️ **WebUI 表情画廊** —— 在 KernelSU / SukiSU / APatch（或装 WebUIX 的 Magisk）里点模块的「打开」，按分类浏览全部表情；画廊用**当前系统 emoji 字体**渲染，本身就是替换是否生效的直观验证
+- 🖼️ **WebUI 表情画廊** —— 在 KernelSU / APatch（或装 WebUIX 的 Magisk）里点模块的「打开」，按分类浏览全部表情；画廊用**当前系统 emoji 字体**渲染，本身就是替换是否生效的直观验证
 - 🔬 **WebUI 实时自检** —— 经管理器 root shell bridge 现场重跑开机校验，逐槽展示（已服务 Twemoji / 仍为原厂 / 设备无此槽）并配进度条；无 bridge 时优雅回退到开机描述
-- 🔄 **应用内更新检查** —— 内置 `updateJson`，KernelSU / SukiSU / APatch / Magisk 的管理器都能在模块列表直接提示新版本
+- 🔄 **应用内更新检查** —— 内置 `updateJson`，KernelSU / APatch / Magisk 的管理器都能在模块列表直接提示新版本
 
 ## 📸 界面预览
 
@@ -60,7 +60,7 @@
 
 ### 环境要求
 
-- 任意 root 方案：Magisk / KernelSU / SukiSU / APatch
+- 任意 root 方案：Magisk / KernelSU / APatch
 
 ### 步骤
 
@@ -94,10 +94,10 @@
 
 | 项目 | 支持情况 |
 |---|---|
-| Root 管理器 | Magisk / KernelSU / SukiSU / APatch（见挂载矩阵） |
+| Root 管理器 | Magisk / KernelSU / APatch（见挂载矩阵） |
 | Android 版本 | 未设硬性下限；Android 15+ 自动改用 `font_fallback.xml` 解析 |
 | OEM ROM | 解析器容忍 OEM `fonts.xml` 变体（多语言 `lang` 属性、额外字体属性） |
-| 已验证 | AOSP 模拟器（API 36）端到端；SukiSU 真机 ✅ |
+| 已验证 | AOSP 模拟器（API 36）端到端；KernelSU 系真机 ✅ |
 
 ## 🛠️ 工作原理
 
@@ -109,7 +109,7 @@
   │
   ├─ 让每个槽都服务 Twemoji 字体（CBDT/CBLC 构建的 NotoColorEmoji.ttf）
   │     ├─ Magisk ──────────────▶ Magic Mount 已把 overlay 就位（安装时逐槽 symlink）
-  │     └─ KSU / SukiSU / APatch ─▶ post-fs-data.sh 逐槽 bind-mount 自挂载
+  │     └─ KSU / APatch ─▶ post-fs-data.sh 逐槽 bind-mount 自挂载
   │                                   └─ cmp -s 守卫：目标已是 Twemoji 则 no-op（多管理器共存安全）
   │
   └─ 逐槽校验实际服务的文件 → 回写模块描述
