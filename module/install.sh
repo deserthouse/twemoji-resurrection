@@ -28,7 +28,7 @@ REPLACE="
 # Set what we want to display when installing the module
 print_modname() {
   ui_print "**************************************"
-  ui_print "      Twemoji Resurrection v17.0.3 (57)"
+  ui_print "      Twemoji Resurrection v17.0.3 (58)"
   ui_print "     Maintained by Gontier Julien & deserthouse"
   ui_print "**************************************"
 }
