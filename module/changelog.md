@@ -1,3 +1,8 @@
+# v17.0.3 (58)
+
+- Bundled LICENSE (GPLv3) and NOTICE (Twemoji artwork CC-BY 4.0 attribution + font build credits) inside the module package, so the distributed zip carries its own licensing information
+- Removed a stray test screenshot that had leaked into webroot/
+
 # v17.0.3 (57)
 
 - WebUI: live, detailed self-check — per-slot verification (serving Twemoji / stock font / absent) with a progress bar, running the same logic as the boot-time check through the manager's root shell bridge, with graceful fallback to the boot-time description

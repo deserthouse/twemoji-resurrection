@@ -1,0 +1,8 @@
+Twemoji Resurrection — NOTICE
+
+- Twemoji artwork (the emoji glyphs inside the bundled font):
+  CC-BY 4.0 — (c) 2014-2021 Twitter; (c) 2022-present the Twemoji maintainers (github.com/jdecked/twemoji)
+- Bundled NotoColorEmoji.ttf, built by twemoji-color-font (CBDT/CBLC packaging):
+  CC-BY 4.0 — (c) 2016-2024 Brad Erickson; (c) 2022-present Jason Sofonia & Justine De Caires; (c) 2014-2021 Twitter (github.com/13rac1/twemoji-color-font)
+- Module code and scripts: GNU GPL v3 — see LICENSE in this package.
+- Project lineage and credits: Xyllon (2017) -> Twemoji Remastered by Gontier Julien / Snowy (2022-2025) -> this project (2026- ). See the repository README.

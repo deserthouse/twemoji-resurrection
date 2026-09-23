@@ -1,6 +1,6 @@
 id=Twemoji-systemless
 name=Twemoji Resurrection
-version=v17.0.3 (57)
+version=v17.0.3 (58)
 versionCode=57
 author=Gontier Julien, deserthouse
 description=Systemlessly replaces your system emoji with Twemoji. Self-mounts on KernelSU/SukiSU/APatch without a mount metamodule; on Magisk the native Magic Mount is used.
