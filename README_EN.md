@@ -82,7 +82,7 @@ Those apps bundle their own emoji fonts and don't use the system font — no sys
 Some emoji font slots still serve the stock font. The upstream OEM `fonts.xml` parsing issue (multi-language `lang` attributes and extra attributes like `toneId` letting vendor emoji fonts survive as fallbacks) is already fixed here; a remaining partial state is a device-specific OEM difference — feel free to open an issue with your font config attached.
 
 **How does this relate to Twemoji Remastered?**
-It's the direct upstream. Lineage: Xyllon (2017, XDA) → Gontier Julien / Snowy's Twemoji Remastered (2022–2025; the true upstream lives on [Codeberg](https://codeberg.org/Snowy/Twemoji-Remastered) — the GitHub Gontier-Julien repo is an outdated mirror stuck at v15.1.0) → this project (2026– ).
+It's the direct upstream. Lineage: Xyllon (2017, XDA) → Tyler O'Neill (2019, slot-parsing & symlink technique) → Gontier Julien / Snowy's Twemoji Remastered (2022–2025; the true upstream lives on [Codeberg](https://codeberg.org/Snowy/Twemoji-Remastered) — the GitHub Gontier-Julien repo is an outdated mirror stuck at v15.1.0) → this project (2026– ).
 
 **Does it modify the system partition?**
 No. Everything happens through systemless mounts; removing the module and rebooting restores the system to its original state.
@@ -125,6 +125,7 @@ Boot · post-fs-data stage
 Project lineage:
 
 - **Xyllon** — the original [Twemoji Magisk module](https://xdaforums.com/t/module-twemoji-twitter-emoji-12-1-2.3688251/) (2017), which started it all
+- **Tyler O'Neill** — the fonts.xml slot-parsing and per-slot symlink install technique (2019), the origin of this module's mounting approach
 - **Gontier Julien** (Codeberg: [Snowy](https://codeberg.org/Snowy/Twemoji-Remastered)) — [Twemoji Remastered](https://codeberg.org/Snowy/Twemoji-Remastered) (2022–2025), the direct upstream this project continues
 - **deserthouse** — Twemoji Resurrection (2026– )
 

@@ -82,7 +82,7 @@
 部分 emoji 字体槽仍在服务原厂字体。上游遗留的 OEM `fonts.xml` 变体解析问题（多语言 `lang` 属性、`toneId` 等额外属性导致 OEM 私有 emoji 字体漏网成为回退）已在本项目修复；仍出现 partial 属个别 OEM 差异，可提 issue 附上你的字体配置。
 
 **和 Twemoji Remastered 是什么关系？**
-直接上游。谱系：Xyllon（2017，XDA）→ Gontier Julien / Snowy 的 Twemoji Remastered（2022–2025，真上游在 [Codeberg](https://codeberg.org/Snowy/Twemoji-Remastered)，GitHub 上的 Gontier-Julien 是停在 v15.1.0 的过时镜像）→ 本项目（2026– ）。
+直接上游。谱系：Xyllon（2017，XDA）→ Tyler O'Neill（2019，槽位解析与 symlink 技巧）→ Gontier Julien / Snowy 的 Twemoji Remastered（2022–2025，真上游在 [Codeberg](https://codeberg.org/Snowy/Twemoji-Remastered)，GitHub 上的 Gontier-Julien 是停在 v15.1.0 的过时镜像）→ 本项目（2026– ）。
 
 **会修改系统分区吗？**
 不会，全部通过 systemless 挂载实现；删除模块并重启即完全还原系统原状。
@@ -124,6 +124,7 @@
 项目谱系：
 
 - **Xyllon** —— 原始 [Twemoji Magisk 模块](https://xdaforums.com/t/module-twemoji-twitter-emoji-12-1-2.3688251/)（2017），一切的起点
+- **Tyler O'Neill** —— fonts.xml 槽位解析与逐槽 symlink 的安装技巧（2019），本模块挂载手法的源头
 - **Gontier Julien**（Codeberg：[Snowy](https://codeberg.org/Snowy/Twemoji-Remastered)）—— [Twemoji Remastered](https://codeberg.org/Snowy/Twemoji-Remastered)（2022–2025），本项目直接延续的上游
 - **deserthouse** —— Twemoji Resurrection（2026– ）
 
