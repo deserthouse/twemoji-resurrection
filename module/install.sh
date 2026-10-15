@@ -28,7 +28,7 @@ REPLACE="
 # Set what we want to display when installing the module
 print_modname() {
   ui_print "**************************************"
-  ui_print "      Twemoji Resurrection v17.0.3 (58)"
+  ui_print "      Twemoji Resurrection v17.0.3 (59)"
   ui_print "     Maintained by Gontier Julien & deserthouse"
   ui_print "**************************************"
 }
@@ -43,21 +43,26 @@ on_install() {
   # Self-mount script for KernelSU/SukiSU/APatch without a mount metamodule
   unzip -o "$ZIPFILE" 'post-fs-data.sh' -d $MODPATH >&2
   chmod 0755 $MODPATH/post-fs-data.sh
+  # Shared slot discovery used by this installer, the boot self-mount and
+  # the WebUI live check — one parser, no drift between the three
+  unzip -o "$ZIPFILE" 'bin/*' -d $MODPATH >&2
   # WebUI (emoji verification gallery): managers render the "Open" button
   # only when webroot/index.html exists in the installed module dir
   unzip -o "$ZIPFILE" 'webroot/*' -d $MODPATH >&2
   [[ -d /sbin/.core/mirror ]] && MIRRORPATH=/sbin/.core/mirror || unset MIRRORPATH
-  # Tolerant emoji-slot parser, same as post-fs-data.sh: family lang may list
-  # several languages and font entries may carry any weight/style attributes —
-  # collect every font slot so OEM vendor emoji fonts don't survive as
-  # partial fallbacks. Android 15+ deprecates fonts.xml in favor of the
-  # generated font_fallback.xml; try both and use whichever yields results.
-  FONTFILES=$(sed -ne '/<family[^>]*lang="[^"]*und-Zsye[^"]*"[^>]*>/,/<\/family>/ {s/.*<font[^>]*>\([^<]*\)<\/font>.*/\1/p;}' $MIRRORPATH/system/etc/fonts.xml)
-  [ -n "$FONTFILES" ] || FONTFILES=$(sed -ne '/<family[^>]*lang="[^"]*und-Zsye[^"]*"[^>]*>/,/<\/family>/ {s/.*<font[^>]*>\([^<]*\)<\/font>.*/\1/p;}' $MIRRORPATH/system/etc/font_fallback.xml)
-  FONTFILES=$(echo "$FONTFILES" | tr ' ' '\n' | sort -u)
-  for font in $FONTFILES
+  # Discover every emoji slot across fonts.xml / font_fallback.xml / product
+  # customization (see bin/emoji-slots.sh) and symlink each one to the module
+  # font so Magic Mount can overlay it. Recovery installs read the configs
+  # through the Magisk mirror; symlink targets keep real device paths.
+  if [ -n "$MIRRORPATH" ]; then
+    SLOTS=$(EMOJI_SLOTS_READ_ROOT=$MIRRORPATH sh $MODPATH/bin/emoji-slots.sh list)
+  else
+    SLOTS=$(sh $MODPATH/bin/emoji-slots.sh list)
+  fi
+  for p in $SLOTS
   do
-    ln -s /system/fonts/NotoColorEmoji.ttf $MODPATH/system/fonts/$font
+    mkdir -p "$MODPATH$(dirname "$p")"
+    ln -s /system/fonts/NotoColorEmoji.ttf "$MODPATH$p"
   done
 }
 

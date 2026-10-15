@@ -1,3 +1,8 @@
+// HISTORICAL (2026-10-15 audit evidence): these assertions reproduce the
+// PRE-build-59 defects exactly as the review found them. They intentionally
+// FAIL against the fixed module; the successor suites are test_emoji_slots.sh
+// and test_webui.cjs. Kept unchanged as the audit's reproduction record.
+//
 // Review characterization tests. Assertions reproduce the reviewed behavior,
 // including defects; a successful run does NOT mean the module is defect-free.
 // No device, privileges, production paths, mounts, or network are used.

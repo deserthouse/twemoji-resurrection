@@ -1,2 +1,4 @@
 .audit-work/
 .venv/
+.test-work/
+.build/

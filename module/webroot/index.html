@@ -93,29 +93,42 @@ const GROUPS = {
 // Build sections + nav
 const nav = document.getElementById("nav");
 const main = document.getElementById("main");
-for (const [name, chars] of Object.entries(GROUPS)) {
-  const id = name.toLowerCase().replace(/[^a-z]+/g, "-");
-  nav.insertAdjacentHTML("beforeend", `<a href="#${id}">${name}</a>`);
-  const section = document.createElement("section");
-  section.id = id;
-  section.innerHTML = `<h2>${name}</h2>`;
-  const grid = document.createElement("div");
-  grid.className = "grid";
-  // Spread keeps ZWJ sequences (e.g. 👨‍👩‍👧) as single glyphs via Intl
-  const seg = new Intl.Segmenter("en", { granularity: "grapheme" });
-  for (const s of seg.segment(chars)) {
-    let t = s.segment;
-    // Legacy symbols (☺ ⚠ ❄ ☂ …) default to TEXT presentation and render
-    // as monochrome outlines unless explicitly followed by VS16 (U+FE0F).
-    if ([...t].length === 1 && !t.endsWith("\uFE0F")) t += "\uFE0F";
-    const sp = document.createElement("span");
-    sp.textContent = t;
-    sp.title = [...s.segment].map(c => "U+" + c.codePointAt(0).toString(16).toUpperCase().padStart(4, "0")).join(" ");
-    grid.appendChild(sp);
+// Grapheme segmentation keeps ZWJ sequences (e.g. 👨‍👩‍👧) as single glyphs.
+// Intl.Segmenter is missing on old WebViews — degrade to a regex approximation
+// (property escapes need WebView ≥64) instead of aborting the page, so the
+// self-check below always gets to run.
+function graphemes(chars) {
+  if (typeof Intl.Segmenter === "function")
+    return [...new Intl.Segmenter("en", { granularity: "grapheme" }).segment(chars)].map(s => s.segment);
+  try {
+    return chars.match(/\p{RI}{2}|\P{M}(?:[\u{1F3FB}-\u{1F3FF}]|[\uFE0E\uFE0F]|\u20E3|\u200D\P{M})*/gu) || [...chars];
+  } catch {
+    return [...chars];
   }
-  section.appendChild(grid);
-  main.appendChild(section);
 }
+try {
+  for (const [name, chars] of Object.entries(GROUPS)) {
+    const id = name.toLowerCase().replace(/[^a-z]+/g, "-");
+    nav.insertAdjacentHTML("beforeend", `<a href="#${id}">${name}</a>`);
+    const section = document.createElement("section");
+    section.id = id;
+    section.innerHTML = `<h2>${name}</h2>`;
+    const grid = document.createElement("div");
+    grid.className = "grid";
+    for (const s of graphemes(chars)) {
+      let t = s;
+      // Legacy symbols (☺ ⚠ ❄ ☂ …) default to TEXT presentation and render
+      // as monochrome outlines unless explicitly followed by VS16 (U+FE0F).
+      if ([...t].length === 1 && !t.endsWith("\uFE0F")) t += "\uFE0F";
+      const sp = document.createElement("span");
+      sp.textContent = t;
+      sp.title = [...s].map(c => "U+" + c.codePointAt(0).toString(16).toUpperCase().padStart(4, "0")).join(" ");
+      grid.appendChild(sp);
+    }
+    section.appendChild(grid);
+    main.appendChild(section);
+  }
+} catch (e) { /* the gallery is decoration — diagnostics must survive it */ }
 
 // ---- Self-check -------------------------------------------------------------
 // Runs the same verification as post-fs-data.sh (does every emoji font slot
@@ -126,20 +139,21 @@ for (const [name, chars] of Object.entries(GROUPS)) {
 const st = document.getElementById("status");
 const MODDIR = "/data/adb/modules/Twemoji-systemless";
 
-// sh one-liner: per slot print "name<TAB>OK|FAIL|ABSENT", then "SUM<TAB>ok<TAB>total"
-const CHECK_CMD = [
-  `M=${MODDIR}`,
-  `S=$M/system/fonts/NotoColorEmoji.ttf`,
-  `P='/<family[^>]*lang="[^"]*und-Zsye[^"]*"[^>]*>/,/<\\/family>/ {s/.*<font[^>]*>\\([^<]*\\)<\\/font>.*/\\1/p;}'`,
-  `F=$(sed -ne "$P" /system/etc/fonts.xml 2>/dev/null)`,
-  `[ -n "$F" ] || F=$(sed -ne "$P" /system/etc/font_fallback.xml 2>/dev/null)`,
-  `for f in $(echo "$F" | tr ' ' '\\n' | sort -u); do`,
-  `  if [ -e "/system/fonts/$f" ]; then`,
-  `    cmp -s "$S" "/system/fonts/$f" && echo "$f\\tOK" || echo "$f\\tFAIL"`,
-  `  else echo "$f\\tABSENT"; fi`,
-  `done`,
-  `exit 0`,
-].join("; ");
+// One plain script call — no shell is generated on the JS side. The shared
+// checker emits "path<TAB>OK|FAIL|ABSENT" per slot (real tabs, printf'd).
+const CHECK_CMD = `sh ${MODDIR}/bin/emoji-slots.sh check`;
+
+// Manager bridges disagree on the exec() return shape: the official KernelSU
+// native WebViewInterface.exec(cmd) returns stdout as a plain String, while
+// the optional JS wrapper (module-webui guide / npm kernelsu package)
+// resolves an object { errno, stdout, stderr }. Adapt both.
+function execOut(r) {
+  if (typeof r === "string") return r;
+  return (r && (r.stdout ?? r.result ?? "")) || "";
+}
+async function bridgeExec(cmd) {
+  return execOut(await ksu.exec(cmd));
+}
 
 function badgeFor(ok, total) {
   if (total > 0 && ok === total) return ["✅", "ok", `Twemoji active — all ${ok}/${total} emoji fonts replaced`];
@@ -167,8 +181,7 @@ function renderSlots(rows) {
   let done = false;
   try {
     if (window.ksu && ksu.exec) {
-      const r = await ksu.exec(CHECK_CMD);
-      const out = (r && (r.stdout ?? r.result ?? "")) || "";
+      const out = await bridgeExec(CHECK_CMD);
       const rows = out.split("\n")
         .map(l => l.split("\t").map(s => s.trim()))
         .filter(a => a.length === 2 && a[0] && /^(OK|FAIL|ABSENT)$/.test(a[1]));
@@ -185,14 +198,17 @@ function renderSlots(rows) {
           `${ok} of ${total} emoji font slots on this system serve Twemoji` +
           (rows.length > total ? ` · ${rows.length - total} declared slot(s) absent` : "");
         renderSlots(rows);
+        try {
+          const prop = await bridgeExec(`cat ${MODDIR}/module.prop`);
+          document.getElementById("ver").textContent = (prop.match(/^version=(.*)$/m) || [])[1] || "";
+        } catch (e) { /* the version line is optional */ }
         done = true;
       }
     }
   } catch (e) { /* fall through to description fallback */ }
   if (!done) {
     try {
-      const r = await ksu.exec(`cat ${MODDIR}/module.prop`);
-      const out = (r && (r.stdout ?? r.result ?? "")) || "";
+      const out = await bridgeExec(`cat ${MODDIR}/module.prop`);
       const desc = (out.match(/^description=(.*)$/m) || [])[1] || "";
       const ver = (out.match(/^version=(.*)$/m) || [])[1] || "";
       document.getElementById("ver").textContent = ver;

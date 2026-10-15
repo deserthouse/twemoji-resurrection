@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<familyset>
+    <family name="product-sans">
+        <font weight="400" style="normal">ProductSans.ttf</font>
+    </family>
+    <family lang="und-Zsye">
+        <font>ProductEmoji.ttf</font>
+    </family>
+</familyset>

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<familyset>
+    <!-- pretty-printed AOSP style -->
+    <family lang="und-Zsye">
+        <font weight="400" style="normal">NotoColorEmoji.ttf</font>
+    </family>
+    <!-- compact single-line emoji family followed by a body family:
+         must NOT swallow the body family's font (old sed-range defect) -->
+    <family lang="und-Zsye"><font>CompactEmoji.ttf</font></family>
+    <family lang="en">
+        <font>BodyFont.ttf</font>
+    </family>
+    <!-- several fonts on one line: both must be found -->
+    <family lang="und-Zsye"><font>DualOne.ttf</font><font>DualTwo.ttf</font></family>
+    <!-- font tags spanning lines: must still be found -->
+    <family lang="und-Zsye">
+        <font weight="400" style="normal"
+>SpanEmoji.ttf</font>
+    </family>
+    <!-- multi-language lang attribute -->
+    <family lang="und und-Zsye">
+        <font>MultiLangEmoji.ttf</font>
+    </family>
+    <family lang="en">
+        <font>Other.ttf</font>
+    </family>
+</familyset>
