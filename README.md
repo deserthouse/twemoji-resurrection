@@ -51,7 +51,7 @@
 
 <p float="left">
   <img src="webui-preview.png" width="270" alt="WebUI 表情画廊与实时自检"/>
-  <img src="docs-a16-proof.png" width="270" alt="开机自检写入的模块描述（模拟器验证）"/>
+  <img src="docs-a16-proof.png" width="270" alt="自检回写的模块描述（AOSP 模拟器 adb-root 流程验证）"/>
 </p>
 
 ## 🚀 安装使用
@@ -97,7 +97,7 @@
 | Root 管理器 | Magisk / KernelSU / APatch（见挂载矩阵） |
 | Android 版本 | 未设硬性下限；并集解析 `fonts.xml` + `font_fallback.xml`（Android 15+）+ `/product` OEM 覆盖 |
 | OEM ROM | 解析器容忍 OEM `fonts.xml` 变体（多语言 `lang` 属性、额外字体属性、非标准排版） |
-| 已验证 | AOSP 模拟器（API 36）端到端；KernelSU 系真机 ✅ |
+| 已验证 | SukiSU（KernelSU 系）真机安装与开机 ✅；AOSP 模拟器（API 36）解析/挂载/画廊（adb-root 手动流程）；Magisk 管理器链路待 rooted 实例验证 |
 
 ## 🛠️ 工作原理
 

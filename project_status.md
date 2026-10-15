@@ -1,6 +1,6 @@
 # 项目状态
 
-更新：2026-10-15（下午）。Sol 审查（R1–R6）六项已全部修复，本地测试全绿（解析器/集成 13 断言、WebUI 7 断言、打包门禁 PASS）；**设备回归与发布未执行，待用户批准**。当前版本 v17.0.3 (59)（versionCode=59）。
+更新：2026-10-15（下午）。Sol 审查（R1–R6）六项已全部修复，本地测试全绿（解析器/集成 13 断言、WebUI 7 断言、打包门禁 PASS）；**设备回归与发布未执行，待用户批准**。当前版本 v17.0.3 (59)（versionCode=59）。**验证口径修正**：历史 "AVD 验证"（build 54-58，A16_clean）实为 adb-root 手动流程，从未覆盖管理器安装/开机/Magic Mount/WebUI bridge；README 兼容表与图注已按真实口径改写。
 
 ## 系统架构
 
@@ -17,7 +17,10 @@ Android systemless Twemoji 字体替换模块。槽位发现单一事实源 = `m
 
 ## TODO
 
-1. 设备回归（待批准）：CleanA36（Magisk）走真实安装器刷 build 59 → 冷启 → 三态描述 → WebUI 画廊；toybox sed/tr 对新解析管线的实机验证；KSU 系真机验证 bridge 实时自检（历史从未真正工作过，R3/R4 修复后首验）。
+1. 设备回归（待批准，三轨；2026-10-15 修正口径——A16_clean 属 clean 实例、无 root 管理器，验不了管理器链路）：
+   - **a. A16_clean（adb-root 手动口径，延续历史验证方式）**：build 59 的 `emoji-slots.sh list/check` 在镜像真实 fonts.xml 上的 **toybox sed/tr 实测**（宿主 GNU 工具无法替代的最后一环）+ 画廊视觉（http.server 8788 + 红鸟标记）。
+   - **b. 新建 `Twemoji_A16_root`（按 AVD_DISCIPLINE.md 第三节）**：google_apis 镜像 + rootAVD fork 打 Magisk 补丁（fork 仓址手册标注待核验，实施时先核验回填；本模块无需 LSPosed，跳过 4-6 步；root 模板禁止复制）。Magisk 真实安装器刷 build 59 → 冷启 → 三态描述 → Magic Mount 与自挂载共存/cmp 守卫实况 → 3 轮 reboot 基准。**Magisk 管理器链路历史上从未被任何环境验证过**（历史 AVD 验证全部是 adb-root 手动流程，安装器缺陷 54/55 靠 SukiSU 真机发现）。
+   - **c. KSU 系真机（SukiSU，需用户协调）**：WebUI bridge 实时自检的首次真实验证（R3/R4 修复前从未工作过）。
 2. 发布 build 59：`build_package.py --out <repo根>/Twemoji-Resurrection-17.0.3-ksu.zip` → commit → push main → 同 tag v17.0.3 替换 Release 资产 + 标题/正文改 (59)（PATCH API）→ 核对 raw update.json 与资产 URL/哈希。
 3. 已知边界（README 已披露）：/data/fonts 可更新字体机制不在覆盖范围。
 

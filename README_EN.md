@@ -51,7 +51,7 @@ The denominator only counts slots that exist on the device — declared-but-abse
 
 <p float="left">
   <img src="webui-preview.png" width="270" alt="WebUI emoji gallery and live self-check"/>
-  <img src="docs-a16-proof.png" width="270" alt="Boot-time status written into the module description (emulator)"/>
+  <img src="docs-a16-proof.png" width="270" alt="Self-check status written into the module description (AOSP emulator, adb-root manual flow)"/>
 </p>
 
 ## 🚀 Installation
@@ -97,7 +97,7 @@ The version tracks upstream Twemoji (17.0.3); the number in parentheses is the m
 | Root managers | Magisk / KernelSU / APatch (see the mounting matrix) |
 | Android versions | No hard minimum; union parsing of `fonts.xml` + `font_fallback.xml` (Android 15+) + `/product` OEM overlays |
 | OEM ROMs | The parser tolerates OEM `fonts.xml` variants (multi-language `lang` attributes, extra font attributes, non-standard layouts) |
-| Verified | End-to-end on an AOSP emulator (API 36); ✅ on a KernelSU-family real device |
+| Verified | SukiSU (KernelSU-family) real device: install + boot ✅; AOSP emulator (API 36): parser/mount/gallery via the adb-root manual flow; Magisk manager flow pending a rooted instance |
 
 ## 🛠️ How it works
 
