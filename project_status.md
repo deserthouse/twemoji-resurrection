@@ -25,9 +25,11 @@ Android systemless Twemoji 字体替换模块。槽位发现单一事实源 = `m
 
 ## TODO
 
-1. SukiSU 真机（需用户协调朋友设备）：WebUI bridge 实时自检的首次真机验证（R3/R4 修复后从未在真 bridge 上跑过；装 build 59 后点开 WebUI 应见 "✅ active — all n/n" + 版本号 + 逐槽清单）。
-2. 上游 Twemoji 出新版本时随更（版本锁 v17.x.y，build 递增；流程=改字体+四处版本+`tests/build_package.py` 门禁+同 tag 换资产）。
-3. 已知边界（README 已披露）：/data/fonts 可更新字体机制不在覆盖范围。
+1. SukiSU 真机（需用户协调朋友设备）：WebUI bridge 实时自检的首次真机验证（R3/R4 修复后从未在真 bridge 上跑过；装 build 59 后点开 WebUI 应见 "✅ active — all n/n" + 版本号 + 逐槽清单）。可选同批：Magisk+WebUIX bridge 路径。
+2. 文档小尾巴：README 双语兼容表仍写"Magisk 管理器链路待 rooted 实例验证"——2026-10-15 已在 Twemoji_A16_root 实证通过，属保守方向的过时陈述，下次提交顺手更新（zh+en 各一行）。
+3. 可选：A15 及以下降级兼容加验（union 解析理论覆盖，未实测；用户未表态）。
+4. 上游 Twemoji 出新版本时随更（版本锁 v17.x.y，build 递增；流程=改字体+四处版本+`tests/build_package.py` 门禁+同 tag 换资产）。
+5. 已知边界（README 已披露，不计划处理）：/data/fonts 可更新字体机制；App 内置 emoji。
 
 ## 核心文件拓扑
 
