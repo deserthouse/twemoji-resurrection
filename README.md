@@ -87,7 +87,7 @@
 **会修改系统分区吗？**
 不会，全部通过 systemless 挂载实现；删除模块并重启即完全还原系统原状。
 
-**版本号 `v17.0.3 (57)` 是什么意思？**
+**版本号 `v17.0.3 (59)` 是什么意思？**
 版本号跟随上游 Twemoji（17.0.3），括号内是模块自身构建号——字体版本与模块迭代分开计数。
 
 ## 📊 兼容性
@@ -95,29 +95,34 @@
 | 项目 | 支持情况 |
 |---|---|
 | Root 管理器 | Magisk / KernelSU / APatch（见挂载矩阵） |
-| Android 版本 | 未设硬性下限；Android 15+ 自动改用 `font_fallback.xml` 解析 |
-| OEM ROM | 解析器容忍 OEM `fonts.xml` 变体（多语言 `lang` 属性、额外字体属性） |
+| Android 版本 | 未设硬性下限；并集解析 `fonts.xml` + `font_fallback.xml`（Android 15+）+ `/product` OEM 覆盖 |
+| OEM ROM | 解析器容忍 OEM `fonts.xml` 变体（多语言 `lang` 属性、额外字体属性、非标准排版） |
 | 已验证 | AOSP 模拟器（API 36）端到端；KernelSU 系真机 ✅ |
 
 ## 🛠️ 工作原理
 
 ```
-开机 · post-fs-data 阶段
+开机 · post-fs-data 阶段（系统字体缓存构建前）
   │
-  ├─ 解析系统字体配置（fonts.xml；Android 15+ 为 font_fallback.xml）
-  │     └─ 提取全部 und-Zsye（emoji）字体槽 —— 容忍 OEM 变体，不漏 OEM 私有 emoji 字体
+  ├─ bin/emoji-slots.sh：提取全部 und-Zsye（emoji）字体槽（三源并集）
+  │     ├─ /system/etc/fonts.xml + /system/etc/font_fallback.xml
+  │     │    （ROM 实际读哪份由构建期决定，并集两种都覆盖）
+  │     └─ /product/etc/fonts_customization.xml（OEM 产品覆盖）
   │
   ├─ 让每个槽都服务 Twemoji 字体（CBDT/CBLC 构建的 NotoColorEmoji.ttf）
-  │     ├─ Magisk ──────────────▶ Magic Mount 已把 overlay 就位（安装时逐槽 symlink）
-  │     └─ KSU / APatch ─▶ post-fs-data.sh 逐槽 bind-mount 自挂载
-  │                                   └─ cmp -s 守卫：目标已是 Twemoji 则 no-op（多管理器共存安全）
+  │     ├─ KSU / APatch ─▶ overlay 已就位 → cmp -s 守卫确认为 no-op；
+  │     │                  无 metamodule 时逐槽 bind-mount 自挂载
+  │     └─ Magisk ─▶ post-fs-data 运行于 Magic Mount 之前：先逐槽 bind-mount，
+  │                  随后 Magic Mount 把同一字体叠到相同槽位（殊途同归）
   │
   └─ 逐槽校验实际服务的文件 → 回写模块描述
         └─ ✅ active (n/n) · ⚠️ partial (x/n) · ❌ not active
 ```
 
-- 安装时按当时解析到的字体槽，在模块目录里为每个槽建 symlink（供 Magic Mount 映射）；开机时再实时解析并逐槽 bind-mount（供 KSU 系自挂载）——两条路径殊途同归：所有 emoji 槽都解析到 Twemoji
+- 安装时按当时解析到的字体槽，在模块目录里为每个槽建 symlink（供 Magic Mount 映射）；开机时再实时解析并逐槽 bind-mount（供 KSU 系自挂载与 Magisk 早期挂载）——两条路径互为冗余：所有 emoji 槽都解析到 Twemoji
+- 安装、开机挂载与 WebUI 自检共用同一份 `bin/emoji-slots.sh` 做槽位发现——单一事实源，三处不会漂移
 - CBDT/CBLC 位图格式与 AOSP 系统 emoji 字体同构，直接替换无需改动字体配置
+- 已知边界：系统「可更新字体」机制（`/data/fonts` 下动态下发的字体更新）优先级高于系统目录，不在本模块覆盖范围内
 
 ## 🤝 致谢
 

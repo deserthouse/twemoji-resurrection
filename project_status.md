@@ -1,48 +1,44 @@
 # 项目状态
 
-更新：2026-10-15。生产基线 `97e3ada`，当前显示版本 v17.0.3 (58)，实际 module.prop versionCode 为 57，待修正。本轮只完成审查与测试记录，未修改生产模块或发布资产。
+更新：2026-10-15（下午）。Sol 审查（R1–R6）六项已全部修复，本地测试全绿（解析器/集成 13 断言、WebUI 7 断言、打包门禁 PASS）；**设备回归与发布未执行，待用户批准**。当前版本 v17.0.3 (59)（versionCode=59）。
 
 ## 系统架构
 
-Android systemless Twemoji 字体替换模块。legacy install.sh 回调负责解包及逐槽 symlink；post-fs-data.sh 解析 emoji 字体槽、按需 bind-mount 并写回描述；WebUI 用系统字体展示分类选集，通过管理器桥接请求诊断；module.prop/update.json 提供更新通道。模块 id 为 Twemoji-systemless。
+Android systemless Twemoji 字体替换模块。槽位发现单一事实源 = `module/bin/emoji-slots.sh`（`fonts.xml` + `font_fallback.xml` + `/product/etc/fonts_customization.xml` 三源并集、全路径输出，`list`/`check` 两模式）：install.sh 消费 `list` 建逐槽 symlink（供 Magic Mount）；post-fs-data.sh 消费 `list` 自挂载并回写三态描述；WebUI 经管理器 root bridge 消费 `check`（execOut 适配原生 String / 包装器对象双返回形态）。Magisk 时序口径已修正：post-fs-data 先于 Magic Mount，自挂载先行、Magic Mount 随后叠同内容。
 
 ## 已实现功能
 
-- Twemoji CBDT/CBLC 字体分发与系统槽位替换。
-- 无挂载 metamodule 时的自挂载路径，以及 cmp 重复挂载守卫。
-- 开机三态状态，排除物理不存在的槽位。
-- WebUI 画廊、实时检查和降级读取的代码路径；本轮确认实时检查存在阻断缺陷，不能标作完整可用。
-- 管理器更新清单及包内许可文件。
-- 审查脚本：19 项隔离行为断言；本地 ZIP、字体结构及完整校验和检查。
+- Twemoji CBDT/CBLC 字体分发与三源槽位替换（含 /product OEM 覆盖）。
+- 自挂载 + cmp 守卫（幂等，二次运行为 no-op，集成测试验证）；多管理器共存安全。
+- 开机三态状态，分母只计实际存在的槽。
+- WebUI 画廊（Intl.Segmenter 守卫 + 正则降级；画廊故障不阻断自检）、实时检查（单命令）、降级读取；实时检查成功时补版本号。
+- 更新通道与包内许可（NOTICE 含 Tyler O'Neill 补署）；发布一致性门禁 `tests/build_package.py`（版本六处一致 + zipUrl 资产名 + zip=git 跟踪清单；build 58 versionCode 57/58 错位事故的防再发）。
+- 字体身份已核验：字体系 jdecked/twemoji v17.0.2 经 twemoji-color-font 构建；上游 v17.0.2↔v17.0.3 零 emoji 资产差异 ⇒ 内容等价，版本宣称 v17.0.3 成立（name 表 17.0.2 是构建来源串，非内容缺口；证据链见 changelog build 59 条目）。
 
 ## TODO
 
-1. P1：修复按行 sed 范围越界选择普通字体及跨行/同一行多字体遗漏。
-2. P2：让配置发现对齐系统实际使用的字体配置，避免只覆盖旧配置却误报全成功。
-3. P2：修复 WebUI CHECK_CMD 的 shell 语法。
-4. P2：正确适配原生 KernelSU exec 的字符串返回值与包装器接口。
-5. P2：同步 module.prop/update.json 的 versionCode，并建立发布一致性门禁。
-6. P2：Intl.Segmenter 能力检测与降级；P3：实时检查成功分支补版本显示。
-7. 核验 OEM product 字体、系统可更新字体、Magisk 挂载前后时序与最终诊断可见性。
-8. 实际管理器完整安装入口、冷启动、SELinux 与更新流程回归。
-9. 核对字体 17.0.2 内嵌版本与 17.0.3 发布声明的来源差异；元数据差异尚不能证明字形内容错误。
-
-完整证据、触发条件、官方来源和限制见 [审查报告](tests/REVIEW-2026-10-15.md)。
+1. 设备回归（待批准）：CleanA36（Magisk）走真实安装器刷 build 59 → 冷启 → 三态描述 → WebUI 画廊；toybox sed/tr 对新解析管线的实机验证；KSU 系真机验证 bridge 实时自检（历史从未真正工作过，R3/R4 修复后首验）。
+2. 发布 build 59：`build_package.py --out <repo根>/Twemoji-Resurrection-17.0.3-ksu.zip` → commit → push main → 同 tag v17.0.3 替换 Release 资产 + 标题/正文改 (59)（PATCH API）→ 核对 raw update.json 与资产 URL/哈希。
+3. 已知边界（README 已披露）：/data/fonts 可更新字体机制不在覆盖范围。
 
 ## 核心文件拓扑
 
 | 路径 | 职责 |
 |---|---|
-| module/install.sh | 安装回调、解包、槽位链接与权限 |
-| module/post-fs-data.sh | 启动自挂载与模块描述检查 |
-| module/webroot/index.html | 表情分类画廊和状态展示 |
-| module/system/fonts/NotoColorEmoji.ttf | 字体数据 |
+| module/bin/emoji-slots.sh | 槽位发现与逐槽检查（单一事实源；EMOJI_SLOTS_READ_ROOT/EMIT_ROOT 覆写供测试与 recovery 镜像读取） |
+| module/install.sh | 安装回调、解包（system/bin/post-fs-data/webroot）、逐槽 symlink（/system 与 /product）与权限 |
+| module/post-fs-data.sh | 启动自挂载与模块描述回写 |
+| module/webroot/index.html | 表情画廊与状态展示（bridge 双形态、Segmenter 降级、DOM 故障隔离） |
+| module/system/fonts/NotoColorEmoji.ttf | 字体数据（jdecked 17.0.2 构建，内容≡17.0.3） |
 | module/META-INF/com/google/android/ | legacy 安装器入口和 MAGISK 标记 |
-| module/module.prop、update.json、changelog.md | 版本与更新元数据 |
+| module/module.prop、update.json、changelog.md | 版本与更新元数据（v17.0.3 (59)） |
 | module/LICENSE、NOTICE | 分发许可和署名 |
-| README.md、README_EN.md | 双语使用与架构说明 |
-| tests/audit_functional.cjs | 以 Node 标准库和 Git Bash 复现功能行为 |
-| tests/audit_package.py | 以 Python 标准库读取包清单、字体结构与校验和 |
-| tests/.audit-work/、tests/.venv/ | 被忽略的隔离样本与 Python 环境 |
+| README.md、README_EN.md | 双语说明（时序/并集解析 2026-10-15 修正） |
+| tests/test_emoji_slots.sh | 解析器 + post-fs-data 集成回归（吞字体/漏字体/跨行/并集/产品源/幂等，13 断言） |
+| tests/test_webui.cjs | WebUI 回归（bridge 双形态/降级/Segmenter 缺失/DOM 故障隔离，7 断言） |
+| tests/build_package.py | 打包 + 发布一致性门禁 |
+| tests/audit_functional.cjs、audit_package.py | 2026-10-15 审查的历史证据（复现修复前缺陷，对修复后代码预期 FAIL/失配；audit_package 读根目录旧 zip，发布 59 后恢复一致） |
+| tests/fixtures/ | 解析器测试夹具（三种字体配置的排版变体） |
+| tests/REVIEW-2026-10-15.md | 审查报告原文 |
 
-本次未连接 Android 设备。隔离脚本的断言通过包含“成功复现缺陷”，不代表模块已通过发布验收。
+设备未连接；发布未执行。本地断言通过 = 修复自测，不代表设备回归完成。

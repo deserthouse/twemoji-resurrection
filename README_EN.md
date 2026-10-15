@@ -87,7 +87,7 @@ It's the direct upstream. Lineage: Xyllon (2017, XDA) → Tyler O'Neill (2019, s
 **Does it modify the system partition?**
 No. Everything happens through systemless mounts; removing the module and rebooting restores the system to its original state.
 
-**What does the version `v17.0.3 (57)` mean?**
+**What does the version `v17.0.3 (59)` mean?**
 The version tracks upstream Twemoji (17.0.3); the number in parentheses is the module's own build number — font updates and module iterations are counted separately.
 
 ## 📊 Compatibility
@@ -95,30 +95,36 @@ The version tracks upstream Twemoji (17.0.3); the number in parentheses is the m
 | Item | Status |
 |---|---|
 | Root managers | Magisk / KernelSU / APatch (see the mounting matrix) |
-| Android versions | No hard minimum; Android 15+ automatically parses `font_fallback.xml` instead |
-| OEM ROMs | The parser tolerates OEM `fonts.xml` variants (multi-language `lang` attributes, extra font attributes) |
+| Android versions | No hard minimum; union parsing of `fonts.xml` + `font_fallback.xml` (Android 15+) + `/product` OEM overlays |
+| OEM ROMs | The parser tolerates OEM `fonts.xml` variants (multi-language `lang` attributes, extra font attributes, non-standard layouts) |
 | Verified | End-to-end on an AOSP emulator (API 36); ✅ on a KernelSU-family real device |
 
 ## 🛠️ How it works
 
 ```
-Boot · post-fs-data stage
+Boot · post-fs-data stage (before the system font cache is built)
   │
-  ├─ Parse the system font config (fonts.xml; font_fallback.xml on Android 15+)
-  │     └─ Collect every und-Zsye (emoji) font slot — tolerant of OEM variants,
-  │        so vendor emoji fonts don't slip through
+  ├─ bin/emoji-slots.sh: collect every und-Zsye (emoji) font slot (union of three sources)
+  │     ├─ /system/etc/fonts.xml + /system/etc/font_fallback.xml
+  │     │    (which one the ROM actually reads is decided at build time — the union covers both)
+  │     └─ /product/etc/fonts_customization.xml (OEM product overlays)
   │
   ├─ Make every slot serve the Twemoji font (CBDT/CBLC build of NotoColorEmoji.ttf)
-  │     ├─ Magisk ──────────────▶ Magic Mount overlay already in place (per-slot symlinks created at install)
-  │     └─ KSU / APatch ─▶ post-fs-data.sh self-mounts each slot via bind-mount
-  │                                   └─ cmp -s guard: no-op if the slot already serves Twemoji (safe coexistence)
+  │     ├─ KSU / APatch ─▶ overlay already in place → the cmp -s guard verifies
+  │     │                  it is a no-op; without a metamodule, each slot is
+  │     │                  bind-mounted by the script itself
+  │     └─ Magisk ─▶ post-fs-data runs BEFORE Magic Mount: the script bind-mounts
+  │                  each slot first, then Magic Mount layers the same font over
+  │                  the same slots (both orders converge)
   │
   └─ Verify what each slot actually serves → rewrite the module description
         └─ ✅ active (n/n) · ⚠️ partial (x/n) · ❌ not active
 ```
 
-- At install time, a symlink is created in the module directory for every font slot parsed back then (for Magic Mount to map); at boot, the config is parsed again and each slot is bind-mounted (the KSU-family self-mount) — two paths, same outcome: every emoji slot resolves to Twemoji
+- At install time, a symlink is created in the module directory for every font slot parsed back then (for Magic Mount to map); at boot, the config is parsed again and each slot is bind-mounted (the KSU-family self-mount and Magisk's early mount) — the two paths back each other up: every emoji slot resolves to Twemoji
+- Slot discovery for the installer, the boot mount and the WebUI self-check all lives in the single `bin/emoji-slots.sh` — one source of truth, no drift between the three
 - The CBDT/CBLC bitmap format matches the AOSP system emoji font, so it drops in without touching the font config
+- Known boundary: the updatable-fonts mechanism (font updates delivered under `/data/fonts`) takes priority over the system directories and is outside this module's scope
 
 ## 🤝 Credits
 
