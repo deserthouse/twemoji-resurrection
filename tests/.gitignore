@@ -2,3 +2,4 @@
 .venv/
 .test-work/
 .build/
+.avd-setup/
