@@ -1,6 +1,6 @@
 # 项目状态
 
-更新：2026-10-15（晚）。Sol 审查六项（R1–R6）全部修复 **且设备回归通过、build 59 已发布**。当前线上：Release v17.0.3 (59)（资产 sha256 `82c02a1dae4…`，与设备实测包逐字节一致）、update.json versionCode=59。剩余唯一开放项：SukiSU 真机 WebUI bridge 实测（需用户协调，见 TODO）。
+更新：2026-10-19。build 59 的原 20 项回归与本地打包检查通过，原 R3/R5/R6 及 R4 返回形态问题已修复；复审新增 **1 项 P1、3 项 P2 功能问题**，不能再按“全部关闭”验收。当前本地包 versionCode=59，12 个文件与 module 工作区一致；2026-10-15 的发布/设备回归记录保留如下，本轮未重新核验在线资产或设备。新意见见 [2026-10-19 复审报告](tests/REVIEW-2026-10-19.md)。
 
 ## 验证记录（2026-10-15，Twemoji_A16_root）
 
@@ -16,20 +16,26 @@ Android systemless Twemoji 字体替换模块。槽位发现单一事实源 = `m
 
 ## 已实现功能
 
-- Twemoji CBDT/CBLC 字体分发与三源槽位替换（含 /product OEM 覆盖）。
-- 自挂载 + cmp 守卫（幂等，二次运行为 no-op，集成测试验证）；多管理器共存安全。
-- 开机三态状态，分母只计实际存在的槽。
-- WebUI 画廊（Intl.Segmenter 守卫 + 正则降级；画廊故障不阻断自检）、实时检查（单命令）、降级读取；实时检查成功时补版本号。
+- Twemoji CBDT/CBLC 字体分发与三源槽位发现；XML 边界仍有 C1/C2，product 原生 overlay 映射仍有 C3。
+- 自挂载 + cmp 守卫（幂等，二次运行为 no-op，集成测试验证）；历史 A16 回归记录了与 Magic Mount 共存。
+- 开机三态状态，分母只计已发现且实际存在的槽；清单误选/漏选会影响状态可信度，待 C1/C2 修复。
+- WebUI 画廊（Intl.Segmenter 守卫 + 正则降级；画廊故障不阻断自检）、实时检查（单命令）、降级读取与版本显示；错误返回处理待 C4。
 - 更新通道与包内许可（NOTICE 含 Tyler O'Neill 补署）；发布一致性门禁 `tests/build_package.py`（版本六处一致 + zipUrl 资产名 + zip=git 跟踪清单；build 58 versionCode 57/58 错位事故的防再发）。
-- 字体身份已核验：字体系 jdecked/twemoji v17.0.2 经 twemoji-color-font 构建；上游 v17.0.2↔v17.0.3 零 emoji 资产差异 ⇒ 内容等价，版本宣称 v17.0.3 成立（name 表 17.0.2 是构建来源串，非内容缺口；证据链见 changelog build 59 条目）。
+- 2026-10-15 字体来源核验记录：jdecked/twemoji v17.0.2 构建，上游 v17.0.2↔v17.0.3 零 emoji 资产差异（见 changelog build 59）；2026-10-19 只复核本地字体结构与哈希一致，未重验上游资产。
 
 ## TODO
 
-1. SukiSU 真机（需用户协调朋友设备）：WebUI bridge 实时自检的首次真机验证（R3/R4 修复后从未在真 bridge 上跑过；装 build 59 后点开 WebUI 应见 "✅ active — all n/n" + 版本号 + 逐槽清单）。可选同批：Magisk+WebUIX bridge 路径。
-2. 文档小尾巴：README 双语兼容表仍写"Magisk 管理器链路待 rooted 实例验证"——2026-10-15 已在 Twemoji_A16_root 实证通过，属保守方向的过时陈述，下次提交顺手更新（zh+en 各一行）。
-3. 可选：A15 及以下降级兼容加验（union 解析理论覆盖，未实测；用户未表态）。
-4. 上游 Twemoji 出新版本时随更（版本锁 v17.x.y，build 递增；流程=改字体+四处版本+`tests/build_package.py` 门禁+同 tag 换资产）。
-5. 已知边界（README 已披露，不计划处理）：/data/fonts 可更新字体机制；App 内置 emoji。
+1. **C1 / P1**：排除 XML 注释中的 family/font。已用原始启动脚本隔离复现：普通 Body.ttf 被替换，自检仍显示 active (2/2)。
+2. **C2 / P2**：补齐合法 XML 的 TAB、单引号、属性等号空白与嵌套 axis；这些样本当前漏槽且返回成功。
+3. **C3 / P2**：安装器把 /product 槽映射到 module/system/product，避免在 module/product 建实体目录，补真实 product 设备的原生挂载验证。
+4. **C4 / P2**：WebUI 校验包装器 errno，并识别不完整检查结果；errno=1 且 stdout 含 OK 行当前仍呈现全部生效。
+5. **C5 / P3**：打包门禁保护完整更新 URL/tag 契约；错误 tag、相同附件 basename 的突变当前仍 PASS。
+6. **C6 / P3**：同步 README 双语兼容表；补充真实 product schema 夹具，去除原测试中的自行物理删除步骤。
+7. SukiSU 真机（需用户协调朋友设备）：WebUI bridge 首次实测；可选同批 Magisk+WebUIX。待功能修复后再做完整安装与冷启动回归。
+8. 可选：A15 及以下兼容加验；上游出新版本时随更，遵守既有版本和资产 URL 契约。
+9. 已知边界（README 已披露）：/data/fonts 可更新字体机制；App 内置 emoji。
+
+2026-10-19 复审验证：原 shell 13 项 + WebUI 7 项 PASS；新增 XML 独立语义对照、启动脚本误挂载、安装 product 路径、bridge 错误返回与 URL 突变实验。仅使用隔离文件和模拟 mount，未连接设备、未修生产代码。通过复现实验不表示缺陷已修复。
 
 ## 核心文件拓扑
 
@@ -50,5 +56,7 @@ Android systemless Twemoji 字体替换模块。槽位发现单一事实源 = `m
 | tests/audit_functional.cjs、audit_package.py | 2026-10-15 审查的历史证据（复现修复前缺陷，对修复后代码预期 FAIL/失配；audit_package 读根目录旧 zip，发布 59 后恢复一致） |
 | tests/fixtures/ | 解析器测试夹具（三种字体配置的排版变体） |
 | tests/REVIEW-2026-10-15.md | 审查报告原文 |
+| tests/REVIEW-2026-10-19.md | build 59 复审意见、剩余问题与修复效果 |
+| tests/review_followup.py | 无删除的复审入口；原回归及独立 XML/安装/bridge/门禁探针 |
 
-2026-10-15：Magisk 链路设备回归完成、build 59 已发布并全链核验（资产/通道/Release 三对齐）。KSU 系真机 bridge 验证待用户协调。本地断言（20 项）+ 设备回归（安装器/开机/挂载/toybox/视觉）双绿。
+历史记录（2026-10-15）：主力 agent 报告 Magisk 链路设备回归及 build 59 发布核验完成。本轮本地重跑 20 项断言通过，但独立探针发现上述剩余缺陷；设备与远端状态尚未重验。
