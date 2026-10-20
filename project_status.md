@@ -32,7 +32,7 @@ Android systemless Twemoji 字体替换模块。槽位发现单一事实源 = `m
 3. **C3 / P2**：安装器把 /product 槽映射到 module/system/product，避免在 module/product 建实体目录，补真实 product 设备的原生挂载验证。
 4. **C4 / P2**：WebUI 校验包装器 errno，并识别不完整检查结果；errno=1 且 stdout 含 OK 行当前仍呈现全部生效。
 5. **C5 / P3**：打包门禁保护完整更新 URL/tag 契约；错误 tag、相同附件 basename 的突变当前仍 PASS。
-6. **C6 / P3**：同步 README 双语兼容表；补充真实 product schema 夹具，去除原测试中的自行物理删除步骤。
+6. **C6 / P3**：README 双语兼容表已于 2026-10-21 同步（见文末审计整改记录）；剩余：补充真实 product schema 夹具，去除原测试中的自行物理删除步骤。
 7. SukiSU 真机（需用户协调朋友设备）：WebUI bridge 首次实测；可选同批 Magisk+WebUIX。待功能修复后再做完整安装与冷启动回归。
 8. 可选：A15 及以下兼容加验；上游出新版本时随更，遵守既有版本和资产 URL 契约。
 9. 已知边界（README 已披露）：/data/fonts 可更新字体机制；App 内置 emoji。
@@ -62,3 +62,11 @@ Android systemless Twemoji 字体替换模块。槽位发现单一事实源 = `m
 | tests/review_followup.py | 无删除的复审入口；原回归及独立 XML/安装/bridge/门禁探针 |
 
 历史记录（2026-10-15）：主力 agent 报告 Magisk 链路设备回归及 build 59 发布核验完成。本轮本地重跑 20 项断言通过，但独立探针发现上述剩余缺陷；设备与远端状态尚未重验。
+
+## 2026-10-21 审计整改记录（GitHub 维护审计轮）
+
+- TWEMOJI-RESURRECTION-02（= TODO C6 的 README 部分）：README.md / README_EN.md 兼容表"已验证"行与本文 2026-10-15 Magisk 验收记录同步（新增 Magisk 30.6 rooted API 36 模拟器条目；SukiSU 真机 WebUI bridge 标待首验）。仅同步既有记录，本轮未重跑设备。
+- TWEMOJI-RESURRECTION-04：module/changelog.md 重构为单一一级标题 + 逐 build 日期 + 分类结构；条目事实不变，日期取自 git 提交历史（53-57=2026-09-12、58=2026-09-24、59=2026-10-15）。
+- 10-19 会话遗留的归档备注（未提交）已代为提交保全。
+- 未关闭（待用户授权/决策）：①TWEMOJI-RESURRECTION-01（P1）：v17.0.3 tag 源码=build53 而附件=build59，需新不可变 tag（如 twemoji-17.0.3-build.60）+ update.json 渐进迁移，属发版操作不可在本轮执行；②本地领先远端提交（复审 + 归档备注 + 本轮文档）待推送授权；③Release 正文历史哈希清理随新构建一并处理。
+- 全轮工作记录：`C:\Users\deser\Projects\github-audit-2026-10-21\remediation-worklog-2026-10-21.md`。
