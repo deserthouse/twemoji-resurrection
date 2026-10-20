@@ -2,6 +2,8 @@
 
 更新：2026-10-19。build 59 的原 20 项回归与本地打包检查通过，原 R3/R5/R6 及 R4 返回形态问题已修复；复审新增 **1 项 P1、3 项 P2 功能问题**，不能再按“全部关闭”验收。当前本地包 versionCode=59，12 个文件与 module 工作区一致；2026-10-15 的发布/设备回归记录保留如下，本轮未重新核验在线资产或设备。新意见见 [2026-10-19 复审报告](tests/REVIEW-2026-10-19.md)。
 
+> 2026-10-19 归档备注：本会话仅做归档，无代码变更。会话结束时宿主 Bash 工具损坏（`spawn C:\Program Files\Git\bin\bash.exe ENOENT`，主会话与子代理均无法起 shell，疑似 Git for Windows 被移动/卸载或本会话 cwd 所在的旧 `Twemoji-Revived` 目录已删除），所有清理与设备操作（杀模拟器、删临时文件、清理 8123 端口进程）**均未执行**。恢复方法：在 `Twemoji-Resurrection` 目录重开 ZCode；若仍报错则重装 Git for Windows。
+
 ## 验证记录（2026-10-15，Twemoji_A16_root）
 
 - 实例：现做 `Twemoji_A16_root`（pixel_7 / android-36 google_apis；共享镜像自带 Magisk 30.6 补丁，无需 rootAVD；Magisk App 官方 30.6 配对 + additional setup 转正）。部署法已回填 AVD 手册第三节。
