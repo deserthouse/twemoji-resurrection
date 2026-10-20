@@ -97,7 +97,7 @@ The version tracks upstream Twemoji (17.0.3); the number in parentheses is the m
 | Root managers | Magisk / KernelSU / APatch (see the mounting matrix) |
 | Android versions | No hard minimum; union parsing of `fonts.xml` + `font_fallback.xml` (Android 15+) + `/product` OEM overlays |
 | OEM ROMs | The parser tolerates OEM `fonts.xml` variants (multi-language `lang` attributes, extra font attributes, non-standard layouts) |
-| Verified | SukiSU (KernelSU-family) real device: install + boot ✅; AOSP emulator (API 36): parser/mount/gallery via the adb-root manual flow; Magisk manager flow pending a rooted instance |
+| Verified | SukiSU (KernelSU-family) real device: install + boot ✅; Magisk 30.6 on a rooted API 36 emulator (2026-10-15, build 59): real-installer flash, boot three-state, manager page and update entry ✅; AOSP emulator (API 36): parser/mount/gallery via the adb-root manual flow; SukiSU real-device WebUI bridge pending its first test |
 
 ## 🛠️ How it works
 
