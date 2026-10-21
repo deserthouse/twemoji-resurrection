@@ -68,5 +68,5 @@ Android systemless Twemoji 字体替换模块。槽位发现单一事实源 = `m
 - TWEMOJI-RESURRECTION-02（= TODO C6 的 README 部分）：README.md / README_EN.md 兼容表"已验证"行与本文 2026-10-15 Magisk 验收记录同步（新增 Magisk 30.6 rooted API 36 模拟器条目；SukiSU 真机 WebUI bridge 标待首验）。仅同步既有记录，本轮未重跑设备。
 - TWEMOJI-RESURRECTION-04：module/changelog.md 重构为单一一级标题 + 逐 build 日期 + 分类结构；条目事实不变，日期取自 git 提交历史（53-57=2026-09-12、58=2026-09-24、59=2026-10-15）。
 - 10-19 会话遗留的归档备注（未提交）已代为提交保全。
-- 未关闭（待用户授权/决策）：①TWEMOJI-RESURRECTION-01（P1）：v17.0.3 tag 源码=build53 而附件=build59，需新不可变 tag（如 twemoji-17.0.3-build.60）+ update.json 渐进迁移，属发版操作不可在本轮执行；②本地领先远端提交（复审 + 归档备注 + 本轮文档）待推送授权；③Release 正文历史哈希清理随新构建一并处理。
+- 未关闭（待执行）：①TWEMOJI-RESURRECTION-01（P1）· **迁移已批准（2026-10-21 用户拍板）**：build≥60 起启用不可变发布身份——tag `twemoji-17.0.3-build.N`、附件名 `Twemoji-Resurrection-17.0.3-build.N-ksu.zip`、update.json 指向本 build 专属 tag URL；**门禁地基已落地**（tests/build_package.py：build≥60 的资产名/URL 断言 + changelog 新结构锚点修复；build<60 保持旧契约不破坏存量更新）；旧 v17.0.3 tag/zipUrl/模块 id 全部不动。实际发版随下一次构建执行（建议在 C1-C6 功能修复后）。②Release 正文历史哈希清理随新构建一并处理（旧哈希已标注为不可下载的历史记录）。
 - 全轮工作记录：`C:\Users\deser\Projects\github-audit-2026-10-21\remediation-worklog-2026-10-21.md`。

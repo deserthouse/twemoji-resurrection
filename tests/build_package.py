@@ -8,9 +8,13 @@ Gates (all must pass before a zip is written; run before every release):
     module.prop version string ("vX.Y.Z (N)")
   * update.json version string == module.prop version string
   * install.sh banner shows the same "vX.Y.Z (N)"
-  * newest changelog.md heading shows the same "vX.Y.Z (N)"
+  * newest changelog.md build heading ("## vX.Y.Z · build N") matches
   * zipUrl asset filename in update.json matches the produced zip filename
     (the asset URL is a contract — renaming breaks every updater)
+  * builds >= 60: immutable release identity — the asset name embeds the build
+    number and zipUrl points at this build's own tag
+    twemoji-<fontver>-build.<N> (approved 2026-10-21; legacy builds < 60 keep
+    the rolling v17.0.3 URL so installed updaters never break)
   * zip contains exactly the git-tracked files under module/, '/'-separated
 
 Build 58 shipped with versionCode 57 while update.json advertised 58 — every
@@ -44,7 +48,7 @@ def main():
     upd = json.loads((MOD / "update.json").read_text(encoding="utf-8"))
     banner = re.search(r"Twemoji Resurrection (v[\d.]+ \((\d+)\))",
                        (MOD / "install.sh").read_text(encoding="utf-8"))
-    head = re.search(r"^# (v[\d.]+ \((\d+)\))",
+    head = re.search(r"^## (v[\d.]+) · build (\d+)",
                      (MOD / "changelog.md").read_text(encoding="utf-8"), re.M)
 
     m = re.fullmatch(r"(v[\d.]+) \((\d+)\)", version)
@@ -58,12 +62,20 @@ def main():
         fail(f'update.json version {upd["version"]!r} != module.prop {version!r}')
     if not banner or banner.group(1) != version:
         fail(f"install.sh banner does not show {version!r}")
-    if not head or head.group(1) != version or int(head.group(2)) != ver_build:
-        fail(f"changelog.md top heading does not show {version!r}")
+    if not head or head.group(1) != ver_num or int(head.group(2)) != ver_build:
+        fail(f"changelog.md top build heading does not show {ver_num} build {ver_build}")
     zip_name = Path(upd["zipUrl"]).name
-    expected_name = f"Twemoji-Resurrection-{ver_num.lstrip('v')}-ksu.zip"
-    if zip_name != expected_name:
-        fail(f"zipUrl asset name {zip_name!r} != expected {expected_name!r}")
+    if ver_build < 60:
+        expected_name = f"Twemoji-Resurrection-{ver_num.lstrip('v')}-ksu.zip"
+        if zip_name != expected_name:
+            fail(f"zipUrl asset name {zip_name!r} != expected {expected_name!r}")
+    else:
+        expected_name = f"Twemoji-Resurrection-{ver_num.lstrip('v')}-build.{ver_build}-ksu.zip"
+        if zip_name != expected_name:
+            fail(f"zipUrl asset name {zip_name!r} != immutable-build name {expected_name!r}")
+        tag = f"twemoji-{ver_num.lstrip('v')}-build.{ver_build}"
+        if f"/download/{tag}/" not in upd["zipUrl"]:
+            fail(f"zipUrl must point at this build's own immutable tag {tag!r}: {upd['zipUrl']!r}")
 
     tracked = sorted(subprocess.check_output(
         ["git", "-C", str(MOD), "ls-files", "-z"]).decode().strip("\0").split("\0"))
