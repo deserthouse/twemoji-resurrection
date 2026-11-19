@@ -79,7 +79,7 @@ Check the module's three-state description first: `❌ not active` means mountin
 Those apps bundle their own emoji fonts and don't use the system font — no systemless module can replace them. This is expected behavior.
 
 **What does `⚠️ partial` mean?**
-Some emoji font slots still serve the stock font. The upstream OEM `fonts.xml` parsing issue (multi-language `lang` attributes and extra attributes like `toneId` letting vendor emoji fonts survive as fallbacks) is already fixed here; a remaining partial state is a device-specific OEM difference — feel free to open an issue with your font config attached.
+Some slots still use the stock font. Build 59 improved slot detection, but some configurations can still be misclassified. Include your Android/ROM version and the relevant font configuration in reports. See the [build 59 review](tests/REVIEW-2026-10-19.md).
 
 **How does this relate to Twemoji Remastered?**
 It's the direct upstream. Lineage: Xyllon (2017, XDA) → Tyler O'Neill (2019, slot-parsing & symlink technique) → Gontier Julien / Snowy's Twemoji Remastered (2022–2025; the true upstream lives on [Codeberg](https://codeberg.org/Snowy/Twemoji-Remastered) — the GitHub Gontier-Julien repo is an outdated mirror stuck at v15.1.0) → this project (2026– ).

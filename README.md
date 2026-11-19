@@ -79,7 +79,7 @@
 这些 App 自带 emoji 字体、不使用系统字体，任何 systemless 模块都替换不了——属预期行为。
 
 **`⚠️ partial` 是什么？**
-部分 emoji 字体槽仍在服务原厂字体。上游遗留的 OEM `fonts.xml` 变体解析问题（多语言 `lang` 属性、`toneId` 等额外属性导致 OEM 私有 emoji 字体漏网成为回退）已在本项目修复；仍出现 partial 属个别 OEM 差异，可提 issue 附上你的字体配置。
+部分槽位仍在使用原厂字体。build 59 改进了槽位识别，仍有配置会被误判。反馈时请附 Android/ROM 版本与相关字体配置，详见 [build 59 复审记录](tests/REVIEW-2026-10-19.md)。
 
 **和 Twemoji Remastered 是什么关系？**
 直接上游。谱系：Xyllon（2017，XDA）→ Tyler O'Neill（2019，槽位解析与 symlink 技巧）→ Gontier Julien / Snowy 的 Twemoji Remastered（2022–2025，真上游在 [Codeberg](https://codeberg.org/Snowy/Twemoji-Remastered)，GitHub 上的 Gontier-Julien 是停在 v15.1.0 的过时镜像）→ 本项目（2026– ）。
@@ -147,7 +147,7 @@
 
 ## 🤖 AI 使用声明 / AI Disclosure
 
-> 本项目由 AI（大语言模型）深度参与开发——包括架构设计、代码实现、测试与文档；人类（[@deserthouse](https://github.com/deserthouse)）提出需求、进行验收并拥有最终决策权。
+> 本项目不含任何人类成分。本项目由 AI（大语言模型）深度参与开发——包括架构设计、代码实现、测试与文档；人类（[@deserthouse](https://github.com/deserthouse)）提出需求、进行验收并拥有最终决策权。
 
 ## ⚖️ 开源协议
 
