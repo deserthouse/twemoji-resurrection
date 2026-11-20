@@ -2,16 +2,15 @@
 
 # Twemoji Resurrection
 
-**Systemless Twemoji (Twitter emoji) replacement for Android — Magisk / KernelSU / APatch**
+Replace the Android system emoji font with Twemoji using Magisk, KernelSU or APatch.
 
-Resurrecting and maintaining the abandoned Twemoji system font replacement — currently Twemoji 17.0.3 (Emoji 17.0 / Unicode 17.0)
+Twemoji 17.0.3 (Emoji 17.0 / Unicode 17.0)
 
-[![License](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](LICENSE)
-[![Platform](https://img.shields.io/badge/Platform-Android-green.svg)](#-compatibility)
-[![Type](https://img.shields.io/badge/Type-Root%20Module-orange.svg)](#-installation)
-[![Release](https://img.shields.io/github/v/release/deserthouse/twemoji-resurrection?include_prereleases&color=yellow&style=flat-square)](https://github.com/deserthouse/twemoji-resurrection/releases)
+[Installation](#-installation) · [Screenshots](#-screenshots) · [Compatibility](#-compatibility)
 
-[简体中文](README.md) · [English](README_EN.md)
+[![License](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](LICENSE) [![Platform](https://img.shields.io/badge/Platform-Android-green.svg)](#-compatibility) [![Type](https://img.shields.io/badge/Type-Root%20Module-orange.svg)](#-installation) [![Release](https://img.shields.io/github/v/release/deserthouse/twemoji-resurrection?include_prereleases&color=yellow&style=flat-square)](https://github.com/deserthouse/twemoji-resurrection/releases)
+
+[简体中文](README.md) · **English**
 
 </div>
 
@@ -147,9 +146,11 @@ Also thanks to **Twitter / X and the Twemoji contributors** for the emoji artwor
 > - **No affiliation**: this project is not affiliated with Twitter / X, Google, Android, or any vendor/project mentioned here; all trademarks belong to their respective owners.
 > - **Use is your own decision**: how the project is used is up to the user; the developer is not responsible for any misuse.
 
-## 🤖 AI Disclosure
+<a name="-ai-disclosure"></a>
 
-> This project was developed with deep AI (LLM) involvement — including architecture design, code implementation, testing and documentation; the human ([@deserthouse](https://github.com/deserthouse)) set the requirements, performed acceptance, and holds final decision-making authority.
+## AI disclosure
+
+This project contains no human ingredients. AI contributed to the module design, implementation, tests and documentation. The [maintainer](https://github.com/deserthouse) sets requirements, reviews releases and makes final decisions. Twemoji artwork and the bundled font retain their own credits and licenses.
 
 ## ⚖️ License
 

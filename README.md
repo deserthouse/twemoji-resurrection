@@ -2,16 +2,15 @@
 
 # Twemoji Resurrection
 
-**Android 系统 Twemoji（Twitter 表情）替换模块 —— systemless，兼容 Magisk / KernelSU / APatch**
+通过 Magisk、KernelSU 或 APatch 将 Android 系统表情字体替换为 Twemoji。
 
-复活并延续停更的 Twemoji 系统字体替换 —— 当前 Twemoji 17.0.3（Emoji 17.0 / Unicode 17.0）
+Twemoji 17.0.3（Emoji 17.0 / Unicode 17.0）
 
-[![License](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](LICENSE)
-[![Platform](https://img.shields.io/badge/Platform-Android-green.svg)](#-兼容性)
-[![Type](https://img.shields.io/badge/Type-Root%20Module-orange.svg)](#-安装使用)
-[![Release](https://img.shields.io/github/v/release/deserthouse/twemoji-resurrection?include_prereleases&color=yellow&style=flat-square)](https://github.com/deserthouse/twemoji-resurrection/releases)
+[安装使用](#-安装使用) · [界面预览](#-界面预览) · [兼容性](#-兼容性)
 
-[简体中文](README.md) · [English](README_EN.md)
+[![License](https://img.shields.io/badge/License-GPL%20v3-blue.svg)](LICENSE) [![Platform](https://img.shields.io/badge/Platform-Android-green.svg)](#-兼容性) [![Type](https://img.shields.io/badge/Type-Root%20Module-orange.svg)](#-安装使用) [![Release](https://img.shields.io/github/v/release/deserthouse/twemoji-resurrection?include_prereleases&color=yellow&style=flat-square)](https://github.com/deserthouse/twemoji-resurrection/releases)
+
+**简体中文** · [English](README_EN.md)
 
 </div>
 
@@ -145,9 +144,11 @@
 > - **无关联声明**：本项目与 Twitter / X、Google、Android 及文中提及的任何厂商/项目无隶属关系；各商标归其各自所有者所有。
 > - **用途自决**：项目用途由使用者自行决定，开发者不对任何滥用行为负责。
 
-## 🤖 AI 使用声明 / AI Disclosure
+<a name="-ai-使用声明--ai-disclosure"></a>
 
-> 本项目不含任何人类成分。本项目由 AI（大语言模型）深度参与开发——包括架构设计、代码实现、测试与文档；人类（[@deserthouse](https://github.com/deserthouse)）提出需求、进行验收并拥有最终决策权。
+## AI 使用声明
+
+本项目不含任何人类成分。AI 参与模块设计、代码实现、测试与文档撰写，[维护者](https://github.com/deserthouse)负责提出需求、验收与最终决策。Twemoji 美术和随附字体保留各自的署名与许可。
 
 ## ⚖️ 开源协议
 
